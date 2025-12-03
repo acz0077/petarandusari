@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
+import 'package:bcrypt/bcrypt.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -28,18 +27,23 @@ class _LoginScreenState extends State<LoginScreen> {
       try {
         final username = _usernameController.text.trim();
         final password = _passwordController.text;
-        final passwordHash = sha256.convert(utf8.encode(password)).toString();
-
+        
         final response = await Supabase.instance.client
-            .from('users')
-            .select('username')
-            .eq('username', username)
-            .eq('password_hash', passwordHash)
-            .single();
+          .from('user')
+          .select('username, password_hash')  
+          .eq('username', username)
+          .single();
 
         // ignore: unnecessary_null_comparison
         if (response != null) {
+          final storedHash = response['password_hash'] as String;
+          if (BCrypt.checkpw(password, storedHash)) {  // Verifikasi dengan bcrypt
           Navigator.pushReplacementNamed(context, '/home', arguments: username);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Username dan password tidak sesuai')),
+          );
+        }
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
+import 'package:bcrypt/bcrypt.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -28,16 +27,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final username = _usernameController.text.trim();
-        final password = _passwordController.text;
-        final passwordHash = sha256.convert(utf8.encode(password)).toString();
+  if (_formKey.currentState!.validate()) {
+    try {
+      final username = _usernameController.text.trim();
+      final password = _passwordController.text;
+      final passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        await Supabase.instance.client.from('users').insert({
-          'username': username,
-          'password_hash': passwordHash,
-        });
+      await Supabase.instance.client.from('user').insert({
+        'username': username,
+        'password_hash': passwordHash,
+      });
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Account created successfully!')),
@@ -50,7 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           errorMessage = 'Username sudah digunakan';
         }
         ScaffoldMessenger.of(
-          context,
+          context
         ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     }
