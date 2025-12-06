@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:peta_randusari/screen/home_screen.dart';
 import 'package:peta_randusari/screen/login_screen.dart';
 import 'package:peta_randusari/screen/sign_up_screen.dart';
-import 'package:peta_randusari/screen/village_maps_screen.dart';
+import 'package:peta_randusari/screen/maps_randusari_screen.dart';
+import 'package:provider/provider.dart';
+import 'services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -18,49 +20,41 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SupabaseService()),
+      ],
+      child: MaterialApp(
+        title: 'Kelurahan Randusari',
+        theme: ThemeData(
+          primaryColor: Colors.blue[900],
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.blue,
+            accentColor: Colors.blue[700],
+          ),
+          fontFamily: 'Roboto',
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.blue[900],
+            elevation: 2,
+            centerTitle: true,
+            titleTextStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          filled: true,
-          fillColor: Colors.grey[100],
-        ),
+        initialRoute: '/login',
+        routes: {
+          '/login': (context) => LoginScreen(),
+          '/home': (context) => HomeScreen(),
+          '/signup': (context) => SignUpScreen(),
+          '/maps': (context) => MapsRandusariScreen(),
+        },
+        debugShowCheckedModeBanner: false,
       ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/sign_up': (context) => const SignUpScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/image': (context) => const VillageMapsScreen(),
-        '/village_maps': (context) => const VillageMapsScreen(),
-        '/resident_table': (context) => const HomeScreen(),
-        '/display_image': (context) => Scaffold(
-          appBar: AppBar(title: Text('Tampilkan Gambar')),
-          body: Center(
-            child: Image.asset(
-              'assets/images/petarandusari1.png',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Text('Gambar tidak ditemukan');
-              },
-            ),
-          ),
-        ),
-      },
     );
   }
 }

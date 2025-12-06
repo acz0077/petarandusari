@@ -1,19 +1,17 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// widget_test.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:peta_randusari/main.dart';
+import 'package:peta_randusari/screen/login_screen.dart';
+import 'package:peta_randusari/screen/sign_up_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/sign_up_screen.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
@@ -26,5 +24,31 @@ void main() {
     // Verify that our counter has incremented.
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
+  });
+
+  testWidgets('Login screen renders correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LoginScreen(),
+      ),
+    );
+
+    // Verify that login screen renders
+    expect(find.text('KELURAHAN RANDUSARI'), findsOneWidget);
+    expect(find.text('MASUK'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNWidgets(2));
+  });
+
+  testWidgets('Sign up screen renders correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SignUpScreen(),
+      ),
+    );
+
+    // Verify that sign up screen renders
+    expect(find.text('Pendaftaran Akun'), findsOneWidget);
+    expect(find.text('Buat Akun Baru'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNWidgets(4));
   });
 }
