@@ -190,7 +190,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   items: _years.map((year) {
                                     return DropdownMenuItem<int>(
                                       value: year,
-                                      child: Text('Tahun $year'),
+                                      child: SizedBox(
+                                        width: 120,
+                                        child: Text(
+                                          'Tahun $year',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ),
                                     );
                                   }).toList(),
                                   onChanged: (value) {
@@ -213,30 +220,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                   items: _agregatList.map((agregat) {
                                     return DropdownMenuItem<String>(
                                       value: agregat['kode'],
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            _getIcon(agregat['icon']),
-                                            color: Color(
-                                              int.parse(
-                                                    agregat['warna'].substring(
-                                                      1,
-                                                      7,
-                                                    ),
-                                                    radix: 16,
-                                                  ) +
-                                                  0xFF000000,
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 200,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              _getIcon(agregat['icon']),
+                                              color: Color(
+                                                int.parse(
+                                                      agregat['warna']
+                                                          .substring(1, 7),
+                                                      radix: 16,
+                                                    ) +
+                                                    0xFF000000,
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Flexible(
-                                            child: Text(
-                                              agregat['nama'],
-                                              overflow: TextOverflow.ellipsis,
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                agregat['nama'],
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     );
                                   }).toList(),
