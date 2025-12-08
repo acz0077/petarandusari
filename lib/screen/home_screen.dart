@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _agregatList = [];
   List<Map<String, dynamic>> _populationData = [];
   bool _isLoading = true;
+  int _currentTab = 0; // 0 = Data Penduduk, 1 = Peta Kelurahan
 
   @override
   void initState() {
@@ -88,19 +89,102 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Data Penduduk Randusari'),
+        title: const Text('Kelurahan Randusari'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.map),
+            icon: const Icon(Icons.logout),
             onPressed: () {
-              Navigator.push(
+              Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => MapsRandusariScreen()),
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (route) => false,
               );
             },
-            tooltip: 'Peta Kelurahan',
+            tooltip: 'Logout',
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50),
+          child: Container(
+            color: Colors.blue[800],
+            child: Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () => setState(() => _currentTab = 0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: _currentTab == 0
+                                ? Colors.white
+                                : Colors.transparent,
+                            width: 3,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.data_usage,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Data Penduduk',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: _currentTab == 0
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: InkWell(
+                    onTap: () => setState(() => _currentTab = 1),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: _currentTab == 1
+                                ? Colors.white
+                                : Colors.transparent,
+                            width: 3,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.map, color: Colors.white, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Peta Kelurahan',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: _currentTab == 1
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -122,19 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text('Beranda'),
               onTap: () => Navigator.pop(context),
             ),
-            ListTile(
-              leading: const Icon(Icons.map),
-              title: const Text('Peta Kelurahan'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MapsRandusariScreen(),
-                  ),
-                );
-              },
-            ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
@@ -150,196 +221,203 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: _isLoading
+      body: _isLoading && _currentTab == 0
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Card(
-                    elevation: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.filter_list, color: Colors.blue),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Filter Data',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: DropdownButtonFormField<int>(
-                                  value: _selectedYear,
-                                  decoration: InputDecoration(
-                                    labelText: 'Tahun',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    prefixIcon: const Icon(
-                                      Icons.calendar_today,
-                                    ),
-                                  ),
-                                  items: _years.map((year) {
-                                    return DropdownMenuItem<int>(
-                                      value: year,
-                                      child: SizedBox(
-                                        width: 120,
-                                        child: Text(
-                                          'Tahun $year',
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    setState(() => _selectedYear = value);
-                                    _loadPopulationData();
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: DropdownButtonFormField<String>(
-                                  value: _selectedAgregat,
-                                  decoration: InputDecoration(
-                                    labelText: 'Jenis Data',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    prefixIcon: const Icon(Icons.category),
-                                  ),
-                                  items: _agregatList.map((agregat) {
-                                    return DropdownMenuItem<String>(
-                                      value: agregat['kode'],
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 200,
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              _getIcon(agregat['icon']),
-                                              color: Color(
-                                                int.parse(
-                                                      agregat['warna']
-                                                          .substring(1, 7),
-                                                      radix: 16,
-                                                    ) +
-                                                    0xFF000000,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: Text(
-                                                agregat['nama'],
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    setState(() => _selectedAgregat = value);
-                                    _loadPopulationData();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _loadPopulationData,
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 50),
-                              shape: RoundedRectangleBorder(
+          : _currentTab == 0
+          ? _buildDataPendudukTab()
+          : _buildPetaKelurahanTab(),
+    );
+  }
+
+  Widget _buildDataPendudukTab() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Card(
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.filter_list, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Filter Data',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 65,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
+                            value: _selectedYear,
+                            decoration: InputDecoration(
+                              labelText: 'Tahun',
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
+                              prefixIcon: const Icon(Icons.calendar_today),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
                             ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.refresh),
-                                SizedBox(width: 8),
-                                Text('Tampilkan Data'),
-                              ],
-                            ),
+                            isExpanded: true,
+                            items: _years.map((year) {
+                              return DropdownMenuItem<int>(
+                                value: year,
+                                child: Text(
+                                  'Tahun $year',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() => _selectedYear = value);
+                              _loadPopulationData();
+                            },
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedAgregat,
+                            decoration: InputDecoration(
+                              labelText: 'Jenis Agregat',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              prefixIcon: const Icon(Icons.category),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                            ),
+                            isExpanded: true,
+                            items: _agregatList.map((agregat) {
+                              return DropdownMenuItem<String>(
+                                value: agregat['kode'],
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      _getIcon(agregat['icon']),
+                                      size: 18,
+                                      color: Color(
+                                        int.parse(
+                                              agregat['warna'].substring(1, 7),
+                                              radix: 16,
+                                            ) +
+                                            0xFF000000,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        agregat['nama'],
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() => _selectedAgregat = value);
+                              _loadPopulationData();
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                Expanded(
-                  child: _populationData.isEmpty
-                      ? const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.data_usage,
-                                size: 64,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                'Pilih filter dan tampilkan data',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(8),
-                          itemCount: _populationData.length,
-                          itemBuilder: (context, index) {
-                            final item = _populationData[index];
-                            return Card(
-                              margin: const EdgeInsets.symmetric(
-                                vertical: 4,
-                                horizontal: 8,
-                              ),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.blue[50],
-                                  child: Text(
-                                    item['jumlah'].toString(),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ),
-                                title: Text(item['kategori']),
-                                subtitle: Text(
-                                  'Persentase: ${item['persentase']}%',
-                                ),
-                                trailing: Chip(
-                                  label: Text('${item['persentase']}%'),
-                                  backgroundColor: _getPercentageColor(
-                                    item['persentase'],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loadPopulationData,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.refresh),
+                        SizedBox(width: 8),
+                        Text('Tampilkan Data'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
+          ),
+        ),
+        Expanded(
+          child: _populationData.isEmpty
+              ? const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.data_usage, size: 64, color: Colors.grey),
+                      SizedBox(height: 16),
+                      Text(
+                        'Pilih filter dan tampilkan data',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: _populationData.length,
+                  itemBuilder: (context, index) {
+                    final item = _populationData[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 4,
+                        horizontal: 8,
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blue[50],
+                          child: Text(
+                            item['jumlah'].toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
+                        title: Text(item['kategori']),
+                        subtitle: Text('Persentase: ${item['persentase']}%'),
+                        trailing: Chip(
+                          label: Text('${item['persentase']}%'),
+                          backgroundColor: _getPercentageColor(
+                            item['persentase'],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
+  }
+
+  Widget _buildPetaKelurahanTab() {
+    return MapsRandusariScreen();
   }
 
   IconData _getIcon(String iconName) {
