@@ -214,6 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     return DropdownMenuItem<String>(
                                       value: agregat['kode'],
                                       child: Row(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(
                                             _getIcon(agregat['icon']),
@@ -229,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ),
                                           const SizedBox(width: 8),
-                                          Expanded(
+                                          Flexible(
                                             child: Text(
                                               agregat['nama'],
                                               overflow: TextOverflow.ellipsis,
