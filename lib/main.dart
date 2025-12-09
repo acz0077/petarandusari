@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:peta_randusari/screen/login_screen.dart';
@@ -13,9 +14,10 @@ void main() async {
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxb2xnY3FqZG10cXducXBjaWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NjE0NTksImV4cCI6MjA4MDEzNzQ1OX0.NttkdyyIg6CLjvxDEHhgcorz8VMVdp_fl6U0BXJIn5U",
   );
 
-  // Initialize background service
-  await BackgroundService.initBackgroundService();
-  await BackgroundService.registerBackgroundTasks();
+  if (Platform.isAndroid || Platform.isIOS) {
+    await BackgroundService.initBackgroundService();
+    await BackgroundService.registerBackgroundTasks();
+  }
 
   runApp(MyApp());
 }
