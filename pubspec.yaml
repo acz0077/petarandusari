@@ -59,8 +59,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.13.1
-flutter_icons:
-  mage_path: icons/logo_apk.jpg
+
+flutter_launcher_icons:
+  image_path: "icons/logo_randusari.png"
+  image_path_android: "icons/logo_randusari.png"
+  image_path_ios: "icons/logo_randusari.png"
   android: true
   ios: true
 
