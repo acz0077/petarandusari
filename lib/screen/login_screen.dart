@@ -46,10 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login gagal: $e'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Login gagal: $e'), backgroundColor: Colors.red),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -84,14 +81,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const SizedBox(height: 20),
                       const Icon(
-                        Icons.account_circle,
+                        Icons.location_city,
                         size: 80,
                         color: Colors.blue,
                       ),
                       const SizedBox(height: 20),
                       Text(
                         'Kelurahan Randusari',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Colors.blue[800],
                             ),
@@ -100,8 +98,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         'Aplikasi Pemetaan Data Penduduk',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                          color: Colors.grey[600],
+                        ),
                       ),
                       const SizedBox(height: 30),
                       TextFormField(
@@ -129,7 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscureText ? Icons.visibility : Icons.visibility_off,
+                              _obscureText
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
                             onPressed: () {
                               setState(() => _obscureText = !_obscureText);
@@ -159,7 +159,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
                               : const Text(
                                   'LOGIN',
                                   style: TextStyle(
