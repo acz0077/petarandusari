@@ -55,6 +55,7 @@ dependencies:
   flutter_local_notifications: ^17.1.2
   firebase_messaging: ^15.0.4
   workmanager: ^0.9.0+3
+  flutter_otp_text_field: ^1.5.1+1
   
 
 
@@ -64,9 +65,9 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
 flutter_launcher_icons:
-  image_path: "icons/logo_randusari.png"
-  image_path_android: "icons/logo_randusari.png"
-  image_path_ios: "icons/logo_randusari.png"
+  image_path: "icons/logo_apk.jpg"
+  image_path_android: "icons/logo_apk.jpg"
+  image_path_ios: "icons/logo_apk.jpg"
   android: true
   ios: true
 

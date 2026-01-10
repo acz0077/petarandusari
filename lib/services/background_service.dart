@@ -20,7 +20,7 @@ class BackgroundService {
   // Initialize local notifications
   static Future<void> _initializeNotifications() async {
     const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/launcher_icon');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings iosSettings =
         DarwinInitializationSettings();
 
